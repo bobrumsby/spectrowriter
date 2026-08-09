@@ -2,26 +2,26 @@
 
 You can use the Kubernetes CLI, `kubectl`, to connect to the Kubernetes server and troubleshoot or debug problems with your pods and containers. The following `kubectl` commands are useful:
 
-- get pods
-- logs
-- exec
-- debug
+- `get pods`
+- `logs`
+- `exec`
+- `debug`
 
-**Tip:** Start with the simple `kubectl get pods` command, then issue `kubectl logs`, then `kubectl exec`. In cases where these three commands don't provide enough information, try using the more advanced `kubectl debug` command. 
+**Tip:** Start with the simple `get pods` command, then issue `logs`, then `exec`. If these commands do not provide enough information, try using the more advanced `debug` command. 
 
-The following sections provide introductory reference information for these four commands. For more commands, complete syntax, and examples, see [https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands). Another basic but informative command is `kubectl describe`.
+The following sections provide introductory reference information for these four commands. For complete syntax, more examples, and information about other commands, see [kubectl Commands](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands).
 
 ## get pods
 
 Get a list of all available pods and their status. You might need to specify the namespace for the command. 
 
-For example, list the pods in the namespace named `myk8s_namespace` by issuing the following command:
+For example, list the pods in the namespace `myk8s_namespace` by issuing the following command:
 
 ```shell
 kubectl get pods -n myk8s_namespace
 ```
 
-This command returns output that looks like this:
+### Sample Output
 
 ```shell
 NAME                       READY   STATUS    RESTARTS   AGE
@@ -30,17 +30,15 @@ api-5d4f7b8c9d-xyz34       1/1     Running   3          2h
 worker-6f7a8b9c0d-lmn56    0/1     Pending   0          7m
 ```
 
-
-
 ## logs
 
-Return the log output `stdout` and `stderr`) for a specific pod and its containers. Use this command to review log history or debug problems with a pod, or a container inside a pod. Specify the pod name and the namespace in the command. For example:
+Return the log output (`stdout` and `stderr`) for a specific pod and its containers. Use this command to review log history or to debug problems with either a pod or a container inside a pod. Specify the pod name and the namespace in the command. For example:
 
 ```shell
 kubectl logs web-7c9d8f6b6b-abc12 -n myk8s_namespace
 ```
 
-This command returns output that looks like this:
+### Sample Output
 
 ```shell
 Starting web server...
@@ -48,7 +46,6 @@ Listening on port 8080
 GET /health 200
 GET / 200
 ```
-
 You can also use the `-c` argument to specify a container.
 
 ## exec
@@ -59,7 +56,9 @@ Start an interactive session or issue a specific command inside a running contai
 kubectl exec web-7c9d8f6b6b-abc12 -n myk8s_namespace -- printenv
 ```
 
-This example issues the `printenv` command inside the pod’s container and returns output that looks like this: 
+This example issues the `printenv` command inside the pod's container.
+
+### Sample Output
 
 ```shell
 HOSTNAME=web-7c9d8f6b6b-abc12
@@ -81,7 +80,9 @@ Troubleshoot pods by creating interactive debugging sessions or temporary debugg
 kubectl debug -n myk8s_namespace pod/web-7c9d8f6b6b-abc12 --image=busybox -it --target=web -- sh
 ```
 
-This command returns output that looks like this:
+
+
+### Sample Output
 
 ```shell
 Defaulting debug container name to debugger-8f7c2.
