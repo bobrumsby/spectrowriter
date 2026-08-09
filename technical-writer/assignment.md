@@ -7,13 +7,13 @@ You can use the Kubernetes CLI, `kubectl`, to connect to the Kubernetes server a
 - `exec`
 - `debug`
 
-**Tip:** Start with the simple `get pods` command, then issue `logs`, then `exec`. If these commands do not provide enough information, try using the more advanced `debug` command. 
+**Tip:** Start with the simple `get pods` command, then issue `logs`, then `exec`. If these commands do not provide enough information, try using the more advanced `debug` command.
 
-The following sections provide introductory reference information for these four commands. For complete syntax, more examples, and information about other commands, see [kubectl Commands](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands).
+The following sections provide introductory reference information for these four commands. For complete syntax, more examples, and information about other commands, refer to [kubectl Commands](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands).
 
 ## get pods
 
-Get a list of all available pods and their status. You might need to specify the namespace for the command. 
+Get a list of all available pods and their status. You might need to specify the namespace for the command.
 
 For example, list the pods in the namespace `myk8s_namespace` by issuing the following command:
 
@@ -46,6 +46,7 @@ Listening on port 8080
 GET /health 200
 GET / 200
 ```
+
 You can also use the `-c` argument to specify a container.
 
 ## exec
@@ -79,8 +80,6 @@ Troubleshoot pods by creating interactive debugging sessions or temporary debugg
 ```shell
 kubectl debug -n myk8s_namespace pod/web-7c9d8f6b6b-abc12 --image=busybox -it --target=web -- sh
 ```
-
-
 
 ### Sample Output
 
