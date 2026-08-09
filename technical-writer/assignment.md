@@ -1,19 +1,106 @@
-# Debug Operations in Kubernetes
+# Useful kubectl commands for troubleshooting
 
-Kubernetes contains several commands, sometimes we can use these commands to do things. A good command to know is kubectl get pods which is used to get a list of all pods that are available and what their status is. Just rememember that when you use this command tat you may have to specify the `namespace`.
+You can use the Kubernetes CLI, kubectl, to connect to the Kubernetes server and troubleshoot or debug problems with your pods and containers. The following kubectl commands are useful:
+
+* get pods
+* logs
+* exec
+* debug
+
+**Tip:** Start with the simple `kubectl get pods` command, then run `kubectl logs`, then `kubectl exec`. In cases where these three commands don't provide enough information, try using the more advanced `kubectl debug` command. 
+
+The following sections provide introductory reference information for these four commands. For more commands, complete syntax, and examples, see https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands. Another basic but informative command is `kubectl describe`.
+
+
+## get pods
+
+Get a list of all available pods and their status. You might need to specify the namespace for the command. 
+
+For example, list the pods in the namespace named `myk8s_namespace` by running the following command:
 
 ```shell
-kubectl get pods --namespace 
+kubectl get pods -n myk8s_namespace
 ```
 
-Speaking of commands, kubectl is the CLI that is used to interact with k8s. The kubectl cli commmunicates with the kubernettes API server.  Another command that is helpful is the kubectl logs command. In Azure, kubernetess is available, just like other cloud providers. This command is used to retrive the logs of a specific pod - do use this when you have to review logs or need to debug a container. Another we will dicuss is the `kubectl exec` command. A command that we can use to debug a container from the inside or to explore the the enviroment of the container itself.  I recommend when debugging you start with kubectl get pods, then `kubectl logs` and lastly we can use `kubectl exec` to explore the inside of the container and review other log files or configurations. 
+This command returns output that looks like this:
 
-**Note:** The command `kubectl debug` is another option to considering when debugging a container. This command can be used to create a clone of a pod that does not terminate if an error is experienced inside the container. 
+```shell
+NAME                       READY   STATUS    RESTARTS   AGE
+web-7c9d8f6b6b-abc12      1/1     Running   0           18m
+api-5d4f7b8c9d-xyz34      1/1     Running   3           2h
+worker-6f7a8b9c0d-lmn56    0/1     Pending   0           7m
+```
 
+## logs
 
+Return the log output (stdout and stderr) for a specific pod and its containers. Use this command to review log history or debug problems with a pod or a container inside a pod. Specify the pod name and the namespace in the command. For example:
 
-# References
+```shell
+kubectl logs web-7c9d8f6b6b-abc12 -n myk8s_namespace
+```
 
-- https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#-strong-getting-started-strong-
+This command returns output that looks like this:
 
-- [What is Kubernetes](https://kubernetes.io/docs/concepts/overview/)
+```shell
+Starting web server...
+Listening on port 8080
+GET /health 200
+GET / 200
+```
+
+You can also use the `-c` argument to specify a container.
+
+## exec
+
+Start an interactive session or run a specific command inside a running container to get information about the environment or explore what might be wrong with it. Specify the pod name and the namespace. For example:
+
+```shell
+kubectl exec web-7c9d8f6b6b-abc12 -n myk8s_namespace -- printenv
+```
+
+This example executes the `printenv` command inside the pod’s container and returns output that looks like this: 
+
+```shell
+HOSTNAME=web-7c9d8f6b6b-abc12
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOME=/root
+KUBERNETES_SERVICE_HOST=10.96.0.1
+KUBERNETES_PORT_HTTPS=443
+MY_APP_ENV=production
+MY_APP_LOG_LEVEL=info
+```
+
+You can also use the `-c` argument to specify a container.
+
+## debug
+
+Troubleshoot pods by creating interactive debugging sessions or temporary debugging containers. For example, the following command creates a debugging container that uses BusyBox command-line tools (such as `ls`, `ps`, and `sh`). You can troubleshoot your environment although the original container doesn't have access to a shell or these debugging tools. 
+
+```shell
+kubectl debug -n myk8s_namespace pod/web-7c9d8f6b6b-abc12 --image=busybox -it --target=web -- sh
+
+```
+
+This command returns output that looks like this:
+
+```shell
+Defaulting debug container name to debugger-8f7c2.
+If you don’t see a command prompt, try pressing enter.
+
+/ #
+/ # ps
+PID   USER     TIME  COMMAND
+1     root      0:00  app
+7     root      0:00  sh
+/ # ls
+bin   dev   etc   proc  sbin  sys  tmp  usr  var
+/ # env | head
+HOSTNAME=web-7c9d8f6b6b-abc12
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOME=/root
+KUBERNETES_SERVICE_HOST=10.96.0.1
+/ # cat /proc/1/status | head
+Name:   app
+State:  S (sleeping)
+Pid:    1
+```
